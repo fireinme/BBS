@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserRequest;
 use App\User;
 use App\Handlers\ImageUploadHandler;
-use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
     //
     public function __construct()
     {
+
         $this->middleware('auth', ['except' => ['show']]);
     }
 
@@ -27,6 +27,7 @@ class UsersController extends Controller
 
     public function update(UserRequest $request, User $user, ImageUploadHandler $uploader)
     {
+        //用户策略认证，是否有权限更新
         $this->authorize('update', $user);
 
         $file = $request->avatar;
