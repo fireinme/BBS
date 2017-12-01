@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Topic;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\TopicRequest;
+use Illuminate\Support\Facades\Auth;
 
 class TopicsController extends Controller
 {
@@ -27,19 +27,35 @@ class TopicsController extends Controller
 
     public function create(Topic $topic)
     {
-        return view('topics.create_and_edit', compact('topic'));
+        $categories = Category::all();
+        return view('topics.create_and_edit', compact('topic', 'categories'));
     }
 
     public function store(TopicRequest $request)
     {
-        $topic = Topic::create($request->all());
-        return redirect()->route('topics.show', $topic->id)->with('message', 'Created successfully.');
+        $topic = new Topic();
+        $topic->fill(\request()->all());
+        $topic->user_id = Auth::user()->id;
+        // $topic->excerpt = '';
+        $topic->save();
+        /* $data = $request->all();
+         $data['user_id'] = Auth::user()->id;
+         $topic = new Topic();
+         $topic->fill($data);
+
+         $topic->save();*/
+
+        /*create为批量赋值，需要在模型中设置运行用户插入（$fillable属性 ）
+         * $topic = Topic::create($data);
+         * */
+        return redirect()->route('topics.show', $topic->id)->with('success', '文章成功创建');
     }
 
     public function edit(Topic $topic)
     {
         $this->authorize('update', $topic);
-        return view('topics.create_and_edit', compact('topic'));
+        $categories = Category::all();
+        return view('topics.create_and_edit', compact('topic', 'categories'));
     }
 
     public function update(TopicRequest $request, Topic $topic)
@@ -47,14 +63,14 @@ class TopicsController extends Controller
         $this->authorize('update', $topic);
         $topic->update($request->all());
 
-        return redirect()->route('topics.show', $topic->id)->with('message', 'Updated successfully.');
+        return redirect()->route('topics.show', $topic->id)->with('success', '更新成功.');
     }
 
     public function destroy(Topic $topic)
     {
-        $this->authorize('destroy', $topic);
+        $this->authorize('update', $topic);
         $topic->delete();
 
-        return redirect()->route('topics.index')->with('message', 'Deleted successfully.');
+        return redirect()->route('topics.index')->with('success', '删除成功.');
     }
 }

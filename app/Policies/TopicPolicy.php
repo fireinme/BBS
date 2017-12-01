@@ -7,14 +7,13 @@ use App\Models\Topic;
 
 class TopicPolicy extends Policy
 {
-    public function update(User $user, Topic $topic)
+    public function create(User $user)
     {
-        // return $topic->user_id == $user->id;
-        return true;
+        return $user;
     }
 
-    public function destroy(User $user, Topic $topic)
+    public function update(User $user, Topic $topic)
     {
-        return true;
+        return $user == $topic->user;
     }
 }

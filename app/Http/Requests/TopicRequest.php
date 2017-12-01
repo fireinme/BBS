@@ -6,28 +6,32 @@ class TopicRequest extends Request
 {
     public function rules()
     {
-        switch($this->method())
-        {
+        switch ($this->method()) {
             // CREATE
-            case 'POST':
-            {
-                return [
-                    // CREATE ROLES
-                ];
-            }
-            // UPDATE
             case 'PUT':
             case 'PATCH':
-            {
+            case 'POST': {
                 return [
-                    // UPDATE ROLES
+                    // CREATE ROLES
+                    'title' => 'required|max:50',
+                    'body' => 'required|min:5',
+                    'category_id' => 'required|numeric',
                 ];
             }
+
+            // UPDATE
+
+
             case 'GET':
+
             case 'DELETE':
-            default:
-            {
-                return [];
+
+            default: {
+                return [
+                    'title' => 'required|max:20',
+                    'body' => 'required|min:5',
+                    'category_id' => 'required|integer',
+                ];
             };
         }
     }
@@ -36,6 +40,7 @@ class TopicRequest extends Request
     {
         return [
             // Validation messages
+            'body.min'=>'文章内容最少为五个字符'
         ];
     }
 }
