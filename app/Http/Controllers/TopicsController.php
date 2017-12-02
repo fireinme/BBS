@@ -22,6 +22,10 @@ class TopicsController extends Controller
 
     public function show(Topic $topic)
     {
+        //通过request('param')可以获取路由中设置的参数
+        if (!empty($topic->slug) && request('slug') != $topic->slug) {
+            return redirect()->to($topic->link());
+        }
         return view('topics.show', compact('topic'));
     }
 
@@ -34,21 +38,18 @@ class TopicsController extends Controller
     public function store(TopicRequest $request)
     {
         $topic = new Topic();
-        $topic->fill(\request()->all());
+        $topic->fill($request->all());
         $topic->user_id = Auth::user()->id;
-        // $topic->excerpt = '';
         $topic->save();
         /* $data = $request->all();
          $data['user_id'] = Auth::user()->id;
          $topic = new Topic();
          $topic->fill($data);
-
          $topic->save();*/
-
         /*create为批量赋值，需要在模型中设置运行用户插入（$fillable属性 ）
          * $topic = Topic::create($data);
          * */
-        return redirect()->route('topics.show', $topic->id)->with('success', '文章成功创建');
+        return redirect()->to($topic->link())->with('success', '文章成功创建');
     }
 
     public function edit(Topic $topic)
@@ -63,7 +64,7 @@ class TopicsController extends Controller
         $this->authorize('update', $topic);
         $topic->update($request->all());
 
-        return redirect()->route('topics.show', $topic->id)->with('success', '更新成功.');
+        return redirect()->to($topic->link())->with('success', '更新成功.');
     }
 
     public function destroy(Topic $topic)

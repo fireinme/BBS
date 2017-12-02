@@ -5,7 +5,7 @@ namespace App\Models;
 class Topic extends Model
 {
     protected $fillable = ['title', 'body', 'category_id',
-          'excerpt', 'slug'];
+        'excerpt', 'slug'];
 
     //关联分类
     public function Category()
@@ -46,5 +46,10 @@ class Topic extends Model
     {
         // 按照创建时间排序
         return $query->orderBy('created_at', 'desc');
+    }
+
+    public function link()
+    {
+        return route('topics.show', ['topic' => $this, 'slug' => $this->slug]);
     }
 }
